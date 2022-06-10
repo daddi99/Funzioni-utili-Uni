@@ -23,7 +23,7 @@ void scriviOrdinatoSuFile(struct NodoLista* lista, char nomeFile[20]);
 void deallocaLista(struct NodoLista* lista);
 
 //MATRICI DINAMICHE
-
+int** popolaMatriceDaFile(char nomeFile[20]);
 
 //------------------------------------------------------------
 
