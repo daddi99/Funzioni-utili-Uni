@@ -12,6 +12,7 @@ struct NodoLista{
 };
 
 //PROTOTIPI FUNZIONI
+//LISTE
 void stampaLista(struct NodoLista* lista);
 struct NodoLista* inserisciInCoda(struct NodoLista* lista, struct Dato nuovoElemento);
 void inserisciInCoda2(struct NodoLista** lista, struct Dato nuovoElemento);
@@ -20,6 +21,9 @@ void filtraLista(struct NodoLista** lista, int valoreMinimo);
 int lunghezzaLista(struct NodoLista* lista);
 void scriviOrdinatoSuFile(struct NodoLista* lista, char nomeFile[20]);
 void deallocaLista(struct NodoLista* lista);
+
+//MATRICI DINAMICHE
+
 
 //------------------------------------------------------------
 
@@ -41,7 +45,7 @@ int main()
 
 
 //------------------------------------------------------------
-//FUNZIONI UTILI
+//FUNZIONI LISTE
 void stampaLista(struct NodoLista* lista)
 {
     if(lista == NULL)
@@ -215,4 +219,44 @@ void deallocaLista(struct NodoLista* lista)
         lista = lista->next;
         free(tmp);
     }
+}
+
+//FUNZIONI MATRICI
+
+//Popola la matrice dal file tenendo conto che la prima riga contiene il numero di righe e colonne
+int** popolaMatriceDaFile(char nomeFile[20])
+{
+    FILE* fileInput = fopen(nomeFile,"r");
+    int numeroRighe, numeroColonne;
+    int** matriceOutput = NULL;
+    int valoreTmp;
+
+    //Controllo errori di apertura file
+    if(fileInput == NULL)
+    {
+        printf("ERRORE: Impossibile leggere il file di input\n");
+        return NULL;
+    }
+    else
+    {
+        //Estrae dalla prima riga del file il numero di righe e colonne
+        fscanf(fileInput,"%d %d",&numeroRighe,&numeroColonne);
+
+        //Alloca lo spazio per numeroRighe puntatori a intero
+        matriceOutput = calloc(numeroRighe, sizeof(int*));
+
+        //Ognuno di questi puntatori punterà ad un vettore di numeroColonne interi
+        for(int i=0; i< numeroRighe;i++)
+            matriceOutput[i] = calloc(numeroColonne,sizeof(int));
+
+        //Continua a scorrere il file e mette tutti gli elementi nella matrice
+        for(int i=0; i<numeroRighe; i++)
+            for(int j=0;j<numeroColonne;j++)
+                fscanf(fileInput,"%d",&matriceOutput[i][j]);
+                
+    }
+
+    fclose(fileInput);
+
+    return matriceOutput;
 }
