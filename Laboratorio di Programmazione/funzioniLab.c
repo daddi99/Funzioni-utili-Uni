@@ -11,7 +11,19 @@ struct NodoLista{
     struct NodoLista* next;
 };
 
-//PROTOTIPI FUNZIONI
+//Si potrebbe anche fare solo con il front ma per comodità tengo traccia anche del rear
+struct Coda
+{
+    struct NodoLista* front;
+    struct NodoLista* rear;
+};
+
+//Per modularità creo una struct apposta anche se contiene semplicemente un puntatore a NodoLista
+struct Pila
+{
+    struct NodoLista* head;
+};
+
 //LISTE
 void stampaLista(struct NodoLista* lista);
 struct NodoLista* inserisciInCoda(struct NodoLista* lista, struct Dato nuovoElemento);
@@ -25,22 +37,35 @@ void deallocaLista(struct NodoLista* lista);
 //MATRICI DINAMICHE
 int** popolaMatriceDaFile(char nomeFile[20]);
 
+//CODE
+struct Coda* creaCoda();
+void enqueue(struct Coda* coda, struct Dato nuovoElemento);
+void dequeue(struct Coda* coda);
+
+//PILE
+void inizializzaStack(struct Pila* pila);
+void push(struct Pila* pila, struct Dato nuovoDato);
+struct Dato pop(struct Pila* pila);
+
 //------------------------------------------------------------
 
 //MAIN
 int main()
 {
-    struct NodoLista* lista = NULL;
+    struct Dato davide = {"Davide",22};
+    struct Dato mario = {"Mario",56};
+    struct Dato rit;
 
-    popolaListaDaFile(&lista,"fileInput.txt");
+    struct Pila* pila;
+    inizializzaStack(pila);
 
-    //filtraLista(&lista, 20);
+    push(pila,davide);
+    push(pila,mario);
+    rit = pop(pila);
 
-    stampaLista(lista);
+    printf("%s %d\n", rit.stringa, rit.intero);
 
-    scriviOrdinatoSuFile(lista,"fileOutput.txt");
-
-    deallocaLista(lista);
+    stampaLista(pila->head);
 }
 
 
@@ -259,4 +284,94 @@ int** popolaMatriceDaFile(char nomeFile[20])
     fclose(fileInput);
 
     return matriceOutput;
+}
+
+//FUNZIONI CODE
+
+struct Coda* creaCoda()
+{
+    //Alloco la nuova coda e setto sia il front che il rear a NULL
+    struct Coda* nuovaCoda = (struct Coda*)malloc(sizeof(struct Coda));
+    nuovaCoda->front = NULL;
+    nuovaCoda->rear = NULL;
+    
+    return nuovaCoda;
+}
+
+//Inserisce il nuovo elemento i coda
+void enqueue(struct Coda* coda, struct Dato nuovoElemento)
+{
+    //Alloco il nuovo nodo ed inizializzo i campi
+    struct NodoLista* nuovoNodo = (struct NodoLista*)malloc(sizeof(struct NodoLista));
+    nuovoNodo->data = nuovoElemento;
+    nuovoNodo->next = NULL;
+
+    //Caso coda vuota
+    if(coda->rear == NULL)
+    {
+        coda->front = nuovoNodo;
+        coda->rear = nuovoNodo;
+        return;
+    }
+    
+    coda->rear->next = nuovoNodo;
+    coda->rear = nuovoNodo; // nuovoNodo diventa la nuova rear
+}
+
+void dequeue(struct Coda* coda)
+{
+    struct NodoLista* tmp;
+
+    //Caso coda vuota
+    if(coda->front == NULL)
+        return;
+    
+    //Si salva il front precedente per poterlo deallocare dopo
+    tmp = coda->front;
+
+    coda->front = coda->front->next; //Aggiorna il front
+
+    //Se il front diventa NULL allora vuol dire che la coda aveva un solo elemento, quindi impostiamo anche il rear a NULL
+    if(coda->front == NULL)
+        coda->rear = NULL;
+
+    free(tmp);
+}
+
+//FUNZIONI PILE
+
+void inizializzaStack(struct Pila* pila)
+{
+    pila->head = NULL;
+}
+
+void push(struct Pila* pila, struct Dato nuovoDato)
+{
+    struct NodoLista* nuovoNodo = (struct NodoLista*)malloc(sizeof(struct NodoLista));
+    nuovoNodo->data = nuovoDato;
+    nuovoNodo->next = NULL;
+
+    if(pila->head == NULL)
+        pila->head = nuovoNodo;
+    else
+    {
+        nuovoNodo->next = pila->head;
+        pila->head = nuovoNodo;
+    }
+}
+
+struct Dato pop(struct Pila* pila)
+{
+    if(pila->head != NULL)
+    {
+        struct Dato valore = pila->head->data;
+        struct NodoLista* daEliminare = pila->head;
+
+        pila->head = pila->head->next;  
+        free(daEliminare);
+
+        return(valore);
+    }
+    else
+        printf("ERRORE POP: La coda e' vuota\n");
 }
