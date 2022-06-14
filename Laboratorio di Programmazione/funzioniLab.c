@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 struct Dato{
     char stringa[20];
@@ -47,6 +48,9 @@ void inizializzaStack(struct Pila* pila);
 void push(struct Pila* pila, struct Dato nuovoDato);
 struct Dato pop(struct Pila* pila);
 
+//ALTRE FUNZIONI
+int generaNumeroCasuale(int valoreMassimo);
+
 //------------------------------------------------------------
 
 //MAIN
@@ -66,6 +70,8 @@ int main()
     printf("%s %d\n", rit.stringa, rit.intero);
 
     stampaLista(pila->head);
+
+    printf("%d\n",generaNumeroCasuale(10));
 }
 
 
@@ -374,4 +380,18 @@ struct Dato pop(struct Pila* pila)
     }
     else
         printf("ERRORE POP: La coda e' vuota\n");
+}
+
+//ALTRE FUNZIONI
+
+/* La funzione rand() normalmente genera dei numeri pseudo casuali, cioè sempre nella stessa sequenza.
+Questa funzione sfrutta srand() per cambiare il seme da cui viene generata la sequenza, lo imposta al numero di secondi trascorsi dal 
+1970 in modo da avere sempre un seed diverso */
+int generaNumeroCasuale(int valoreMassimo)
+{
+    srand(time(NULL)); //Imposta il seed al numero di secondi passati dal 1970, quindi sarà un valore che cambia ogni secondo
+
+    int risultato = rand() % (valoreMassimo + 1); //Utlizzo l'operatore modulo per ottenere un numero nell'intervallo desiderato
+
+    return risultato;
 }
