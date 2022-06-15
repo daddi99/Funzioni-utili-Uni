@@ -37,6 +37,7 @@ void deallocaLista(struct NodoLista* lista);
 
 //MATRICI DINAMICHE
 int** popolaMatriceDaFile(char nomeFile[20]);
+void stampaMatrice(float** matrice, int numeroRighe, int numeroColonne);
 
 //CODE
 struct Coda* creaCoda();
@@ -290,6 +291,25 @@ int** popolaMatriceDaFile(char nomeFile[20])
     fclose(fileInput);
 
     return matriceOutput;
+}
+
+//Stampa la matrice in una versione un pò più bella esteticamente
+void stampaMatrice(float** matrice, int numeroRighe, int numeroColonne)
+{
+    printf("\n");
+    for(int i=0; i<numeroRighe; i++)
+    {
+        printf("%d  ",i); //Stampa l'indice di riga
+        for(int j=0; j<numeroColonne; j++)
+        {
+            //Se il valore ha una sola cifra prima della virgola stampa uno spazio in più per avere il disegno allineato
+            if(matrice[i][j] < 10) 
+                printf("| %.2f  |",matrice[i][j]);
+            else
+                printf("| %.2f |",matrice[i][j]);
+        }
+        printf("\n");
+    }        
 }
 
 //FUNZIONI CODE
