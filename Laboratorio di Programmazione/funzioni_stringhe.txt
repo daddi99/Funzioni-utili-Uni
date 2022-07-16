@@ -1,0 +1,10 @@
+strlen -> Restituisce la lungezza della stringa
+strlwr e strupr -> Convertono la stringa in minuscolo e maiuscolo (sono distruttive)
+strcat(stringa1, stringa2) -> "Incolla" stringa2 all'inizio di stringa1
+strncat(stringa1, stringa2, n) -> Incolla i primi n caratteri di stringa2 alla fine di stringa 1
+strchr(stringa, carattere) -> Ritorna il puntatore alla prima occorrenza del carattere nella stringa
+strrchr(stringa, carattere) -> Ritorna il puntatore all'ultima occorrenza del carattere nella stringa
+strstr(stringa1, string2) -> Ritorna il puntatore alla prima occorrenza di stringa2 in stringa1
+strset(stringa, carattere) -> Setta tutta la stringa ad un determinato carattere
+strset(stringa, carattere, n) -> Setta i primi n caratteri di una stringa ad un determinato carattere
+strrev(stringa) -> Reverse a string
