@@ -38,6 +38,8 @@ void deallocaLista(struct NodoLista* lista);
 
 //MATRICI DINAMICHE
 int** popolaMatriceDaFile(char nomeFile[20]);
+int** inizializza_matrice(int numeroRighe, int numeroColonne);
+void dealloca_matrice(int** matrice, int numeroRighe);
 void stampaMatrice(float** matrice, int numeroRighe, int numeroColonne);
 
 //CODE
@@ -273,6 +275,31 @@ void deallocaLista(struct NodoLista* lista)
 }
 
 //FUNZIONI MATRICI
+
+void dealloca_matrice(int** matrice, int numeroRighe)
+{
+    //Dealloco le singole righe che sono degli array precedentementa allocati con la calloc
+    for(int i=0; i<numeroRighe; i++)
+        free(matrice[i]);
+
+    //Dealloco l'array di puntatori
+    free(matrice);
+}
+
+//Alloca memoria per una matrice dinamica numeroRighe X numeroColonne e la ritorna.
+int** inizializza_matrice(int numeroRighe, int numeroColonne)
+{
+    int** matrice;
+
+    //Alloca lo spazio per numeroRighe puntatori
+    matrice = calloc(numeroRighe, sizeof(int*));
+
+    //Ognuno di questi puntatori sarà un vettore dinamico di numeroColonne elementi
+    for(int i=0; i<numeroRighe; i++)
+        matrice[i] = calloc(numeroColonne, sizeof(int));
+
+    return matrice;
+}
 
 //Popola la matrice dal file tenendo conto che la prima riga contiene il numero di righe e colonne
 int** popolaMatriceDaFile(char nomeFile[20])
