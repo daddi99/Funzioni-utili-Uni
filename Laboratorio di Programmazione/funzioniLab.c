@@ -31,6 +31,7 @@ struct NodoLista* inserisciInCoda(struct NodoLista* lista, struct Dato nuovoElem
 void inserisciInCoda2(struct NodoLista** lista, struct Dato nuovoElemento);
 void popolaListaDaFile(struct NodoLista** lista, char nomeFile[20]);
 void filtraLista(struct NodoLista** lista, int valoreMinimo);
+struct NodoLista* filtraLista_noEdit(struct NodoLista* lista);
 int lunghezzaLista(struct NodoLista* lista);
 void scriviOrdinatoSuFile(struct NodoLista* lista, char nomeFile[20]);
 void deallocaLista(struct NodoLista* lista);
@@ -159,6 +160,24 @@ void filtraLista(struct NodoLista** lista, int valoreMinimo)
             nodoCorrente = nodoCorrente->next;
         }
     }
+}
+
+//Filtra la lista ma senza modificarla, infatti ritorna una nuova lista contenente solo i nodi che ci interessano
+struct NodoLista* filtraLista_noEdit(struct NodoLista* lista)
+{
+    struct NodoLista* listaFiltrata = NULL;
+
+    while(lista != NULL)
+    {
+        //CONDIZIONE DA VERIFICARE PER ESSERE INSERITO NELLA LISTA FILTRATA
+        if(lista->data.intero < 20)
+        {
+            inserisciInCoda2(&listaFiltrata, lista->data);
+        }
+        lista = lista->next;
+    }
+
+    return listaFiltrata;
 }
 
 void scriviOrdinatoSuFile(struct NodoLista* lista, char nomeFile[20])
