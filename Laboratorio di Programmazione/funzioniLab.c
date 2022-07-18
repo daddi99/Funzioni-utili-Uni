@@ -42,6 +42,9 @@ int** inizializza_matrice(int numeroRighe, int numeroColonne);
 void dealloca_matrice(int** matrice, int numeroRighe);
 void stampaMatrice(float** matrice, int numeroRighe, int numeroColonne);
 
+void punto_di_differenza_massima(int** M, int n_righe, int n_colonne);
+int confronto_adiacenti(int differenza_massima, int cella_corrente, int adiacente1, int adiacente2, int adiacente3, int adiacente4, int adiacente5, int adiacente6, int adiacente7, int adiacente8);
+
 //CODE
 struct Coda* creaCoda();
 void enqueue(struct Coda* coda, struct Dato nuovoElemento);
@@ -60,22 +63,10 @@ int generaNumeroCasuale(int valoreMassimo);
 //MAIN
 int main()
 {
-    struct Dato davide = {"Davide",22};
-    struct Dato mario = {"Mario",56};
-    struct Dato rit;
-
-    struct Pila* pila;
-    inizializzaStack(pila);
-
-    push(pila,davide);
-    push(pila,mario);
-    rit = pop(pila);
-
-    printf("%s %d\n", rit.stringa, rit.intero);
-
-    stampaLista(pila->head);
-
-    printf("%d\n",generaNumeroCasuale(10));
+    int** matrice = inizializza_matrice(10,10);
+    matrice = popolaMatriceDaFile("fileInput.txt");
+    
+    punto_di_differenza_massima(matrice, 10, 10);
 }
 
 
@@ -358,6 +349,87 @@ void stampaMatrice(float** matrice, int numeroRighe, int numeroColonne)
     }        
 }
 
+//Trova la cella della matrice che ha la differenza di valore maggiore con tutte le celle adiacenti.
+void punto_di_differenza_massima(int** M, int n_righe, int n_colonne)
+{
+    int NO_CELL = 999; //Questo valore mi serve per i casi particolari (celle negli angoli e lati) che non hanno 8 cella adiacenti.
+    float differenza;
+    int max = 0; //Alla fine conterrà il valore massimo calcolato
+    int massimo_precedente;
+    int indice_riga, indice_colonna; //Tengono traccia della cella a cui corrisponde il valore massimo
+
+    //Scorre tutte le celle della matrice
+    for(int i=0; i<n_righe; i++)
+        for(int j=0; j<n_colonne; j++)
+        {
+            massimo_precedente = max; //Mi salvo il precendete valore del massimo per fare il confronto alla fine
+
+            //CASO CELLA IN ALTO A SINISTRA
+            if(i==0 && j==0)
+                max = confronto_adiacenti(max, M[0][0], M[0][1], M[1][0], M[1][1],NO_CELL,NO_CELL,NO_CELL,NO_CELL,NO_CELL);
+
+            //CASO CELLA IN ALTO A DESTRA
+            else if(i==0 && j==n_colonne-1)
+                max = confronto_adiacenti(max,M[0][j], M[0][j-1], M[1][j], M[1][j-1],NO_CELL,NO_CELL,NO_CELL,NO_CELL,NO_CELL);
+
+            //CASO CELLA IN BASSO A SINISTRA
+            else if(i==n_righe-1 && j==0)
+                max = confronto_adiacenti(max, M[i][0], M[i-1][0], M[i-1][1], M[i-1][1],NO_CELL,NO_CELL,NO_CELL,NO_CELL,NO_CELL);
+
+            //CASO CELLA IN BASSO A DESTRA
+            else if(i==n_righe-1 && j==n_colonne-1)
+                max = confronto_adiacenti(max, M[i][j], M[i-1][j], M[i-1][j-1], M[i][j-1],NO_CELL,NO_CELL,NO_CELL,NO_CELL,NO_CELL);   
+
+            //CASO CELLA NELLA PRIMA RIGA
+            else if(i==0)
+                max = confronto_adiacenti(max,M[i][j],M[i][j-1],M[i+1][j-1],M[i+1][j],M[i+1][j+1],M[i][j+1],NO_CELL,NO_CELL,NO_CELL);
+            
+            //CASO CELLA COLONNA A DESTRA
+            else if(j==n_colonne-1)
+                max = confronto_adiacenti(max,M[i][j],M[i-1][j],M[i-1][j-1],M[i][j-1],M[i+1][j],M[i+1][j-1],NO_CELL,NO_CELL,NO_CELL);
+
+            //CASO CELLA COLONNA A SINISTRA
+            else if(j==0)
+                max = confronto_adiacenti(max,M[i][j],M[i-1][j],M[i-1][j+1],M[i][j+1],M[i+1][j+1],M[i+1][j],NO_CELL,NO_CELL,NO_CELL);
+            
+            //CASO CELLA NELL'ULTIMA RIGA
+            else if(i==n_righe-1)
+                max = confronto_adiacenti(max,M[i][j],M[i][j-1],M[i-1][j-1],M[i-1][j],M[i-1][j+1],M[i][j+1],NO_CELL,NO_CELL,NO_CELL);
+
+            //CASO GENERALE DI UNA CELLA INTERNA
+            else
+                max = confronto_adiacenti(max,M[i][j],M[i-1][j-1],M[i-1][j],M[i-1][j+1],M[i][j+1],M[i+1][j+1],M[i+1][j],M[i+1][j-1],M[i][j-1]);
+            
+            //Se il massimo è cambiato mi salvo la posizione della cella
+            if(max != massimo_precedente)
+            {
+                indice_riga = i;
+                indice_colonna = j;
+            }
+        }
+
+        printf("PUNTO DI DIFFERENZA MAGGIORE: [%d][%d]\nVALORE: %d\n",indice_riga,indice_colonna,max);
+}
+
+//Funzione che calcola la differenza massima tra una cella e tutte le celle adiacenti ad essa. Nei casi particolari, come le celle nei lati e negli angoli, basta dare in input NO_CELL alle celle adiacenti non presenti.
+int confronto_adiacenti(int differenza_massima, int cella_corrente, int adiacente1, int adiacente2, int adiacente3, int adiacente4, int adiacente5, int adiacente6, int adiacente7, int adiacente8)
+{
+    //Metto tutti i valori delle celle adiacenti in un vettore
+    int vettore_adiacenti[8] = {adiacente1,adiacente2,adiacente3,adiacente4,adiacente5,adiacente6,adiacente7,adiacente8};
+    int differenza;
+
+    for(int i=0; i<8; i++)
+    {
+        //Faccio la differenza tra la cella corrente e tutte le sue adiacenti
+        differenza = cella_corrente - vettore_adiacenti[i];
+
+        //Ricerca del massimo tra tutte le differenze trovate
+        if(differenza > differenza_massima)
+            differenza_massima = differenza;
+    }
+
+    return differenza_massima;
+}
 //FUNZIONI CODE
 
 struct Coda* creaCoda()
